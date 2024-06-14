@@ -1,32 +1,59 @@
+import algoliasearch from "algoliasearch";
+
+const client = algoliasearch("J755TTVDL1", "01bfeb3c35071ce3e812b9c3de70f2ff");
+const index = client.initIndex("search");
+
 let data=[];
 
-fetch('https://fakestoreapi.com/products')
-            .then(res=>res.json())
-            .then(json=>{
-                data=json;
-                console.log(data)
-            })
+
+// index
+//   .search("Men")
+//   .then(({ hits }) => {
+//     console.log(hits);
+//   })
+//   .catch(err => {
+//     console.log(err);
+//   });
+
+
+
+// fetch('https://fakestoreapi.com/products')
+//             .then(res=>res.json())
+//             .then(json=>{
+//                 data=json;
+//                 console.log(data)
+//             })
 
 
 document.getElementById('input').addEventListener('keyup',()=>{
-    inp=document.getElementById('input').value;
-    console.log(inp);
-    searched=[];
-    searched=data.filter((prod)=>{
-        if(String(prod.title).includes(inp)){
-          return String( prod.title);
-        //   return String( prod.title);
+    var inp=document.getElementById('input').value;
+    // console.log(inp);
+    // var searched=[];
+    // searched=data.filter(product=>{
+    //     if(product.title.includes(String(inp))){
+
+    //         return product;
+    //     }
+    // })
+    if(String(inp).trim().length>0){
+        index.search(inp).then(response=>{
+            // console.log(response)
+            renderProducts(response.hits)
+    // renderProducts(searched);
+        })
         
-        }
-    })
-    // console.log(searched);
-    renderProducts(searched);
+
+        
+    }
+    else{
+       removeElements();
+    }
 })
 
+
+
 function renderProducts(products){
-    document.querySelectorAll(".result").forEach(Product => {
-        Product.remove();
-    });
+    removeElements();
 
     products.forEach(product=>{
         renderSingleProduct(product)
@@ -34,24 +61,30 @@ function renderProducts(products){
     
 }
 
+function removeElements(){
+    document.querySelectorAll(".result").forEach(Product => {
+        Product.remove();
+    });
+}
+
 parent=document.querySelector(".results");
 
 function renderSingleProduct(product){
     let divv=document.createElement('div')
     divv.className="result" 
-    img=document.createElement('img')
-    pname=document.createElement('h5')
-    amt=document.createElement('p')
-    btn=document.createElement('button')
+    var imgg=document.createElement('img')
+    var pname=document.createElement('h5')
+    var amt=document.createElement('p')
+    var btn=document.createElement('button')
 
-    img.src=product.image;
-    img.style.height="100px"
-    img.style.width="80x"
+    imgg.src=product.image;
+    imgg.style.height="100px"
+    imgg.style.width="80x"
     pname.innerText=product.title;
     amt.innerText="price "+product.price;
     btn.innerText="purchase";
     
-    divv.append(img)
+    divv.append(imgg)
     divv.append(pname)
     divv.append(amt)
     divv.append(btn)
